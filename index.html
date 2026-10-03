@@ -1,14 +1,172 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-    <meta name="theme-color" content="#23243a" />
-    <title>The Corporation</title>
-    <style>@font-face{font-family:Pixelify Sans;src:url(assets/PixelifySans.ttf)format("truetype");font-weight:400 700}@font-face{font-family:Nunito;src:url(assets/Nunito.ttf)format("truetype");font-weight:200 1000}html,body{touch-action:none;overscroll-behavior:none;background:#1f2340;height:100%;margin:0;overflow:hidden}#game{inset:env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;position:fixed}canvas{display:block}</style>
-    <script type="module" crossorigin src="./assets/index-BDmWdcOZ.js"></script>
-  </head>
-  <body>
-    <div id="game"></div>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f2340">
+<title>The Corporation — Balance out your career and life</title>
+<meta name="description" content="Six months' probation in an open-plan office, one day at a time. Two answers a day. Neither is the right one. A pixel-art career sim for iPhone and Android.">
+<meta property="og:title" content="The Corporation">
+<meta property="og:description" content="Balance out your career and life. Six months' probation in an open-plan office.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://playthecorporation.app/">
+<meta property="og:image" content="https://playthecorporation.app/img/icon-180.png">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/icon-180.png">
+<style>
+  @font-face { font-family: 'Pixelify Sans'; src: url('fonts/PixelifySans.ttf') format('truetype'); font-weight: 400 700; font-display: swap; }
+  @font-face { font-family: 'Nunito'; src: url('fonts/Nunito.ttf') format('truetype'); font-weight: 200 1000; font-display: swap; }
+  :root {
+    --night: #1f2340; --night-hi: #2b2f5c; --line: #4a4f7a;
+    --paper: #fffaf0; --paper-dark: #efe6d2; --ink: #1f2340; --muted: #5d6088;
+    --teal: #2ec4a6; --teal-dark: #1f9c84; --gold: #ffd166; --gold-dark: #e0a93a;
+    --purple: #7b6cf6; --red: #ff6b6b; --soft: #c9cbe6;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--night); color: #fff; font: 500 17px/1.6 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: var(--teal); }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+  .pixel { font-family: 'Pixelify Sans', 'Nunito', sans-serif; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; }
+
+  header { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-size: 15px; }
+  .brand img { width: 36px; height: 36px; border-radius: 9px; image-rendering: pixelated; }
+  nav a { color: var(--soft); text-decoration: none; font-weight: 700; font-size: 15px; margin-left: 20px; }
+  nav a:hover { color: #fff; }
+
+  .hero { text-align: center; padding: 44px 0 28px; }
+  .hero h1 { margin: 0; font-size: clamp(40px, 9vw, 84px); line-height: 1; color: var(--gold); text-shadow: 0 4px 0 var(--purple), 0 8px 0 rgba(0,0,0,.25); }
+  .hero .tag { margin: 22px auto 0; font-size: clamp(20px, 3.2vw, 26px); font-weight: 800; max-width: 22em; }
+  .hero .sub { margin: 10px auto 0; color: var(--soft); max-width: 34em; }
+  .cta { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 30px; }
+  .btn { display: inline-block; padding: 14px 26px; border-radius: 14px; font-weight: 900; font-size: 17px; text-decoration: none; transition: transform .08s ease; }
+  .btn:active { transform: translateY(3px); }
+  .btn.teal { background: var(--teal); color: var(--ink); box-shadow: 0 5px 0 var(--teal-dark); }
+  .btn.gold { background: var(--gold); color: var(--ink); box-shadow: 0 5px 0 var(--gold-dark); }
+  .stores { margin-top: 18px; color: var(--soft); font-size: 15px; }
+
+  .shots { display: flex; gap: 6px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 26px 20px 30px; margin: 0 auto; max-width: 1600px; scrollbar-color: var(--line) transparent; }
+  .shots img { flex: 0 0 auto; width: min(72vw, 280px); height: auto; aspect-ratio: 1284 / 2778; scroll-snap-align: center; }
+
+  section { padding: 44px 0; }
+  h2 { margin: 0 0 20px; font-size: clamp(24px, 4vw, 34px); color: var(--gold); line-height: 1.15; }
+  .lede { font-size: 19px; max-width: 40em; }
+  .lede + .lede { margin-top: 14px; color: var(--soft); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px; }
+  .card { background: var(--paper); color: var(--ink); border-radius: 18px; padding: 24px 24px 20px; box-shadow: 0 7px 0 rgba(0,0,0,.22); }
+  .card h3 { margin: 0 0 12px; font-size: 18px; color: #157564; }
+  .card.office h3 { color: #c43c3c; }
+  .card ul { margin: 0; padding: 0; list-style: none; }
+  .card li { padding: 9px 0 9px 22px; position: relative; border-top: 2px solid var(--paper-dark); }
+  .card li:first-child { border-top: 0; }
+  .card li::before { content: ''; position: absolute; left: 2px; top: 19px; width: 8px; height: 8px; background: currentColor; opacity: .55; }
+
+  .price { background: var(--night-hi); border: 2px solid var(--line); border-radius: 18px; padding: 26px; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 20px; }
+  .price div strong { display: block; font-size: 18px; color: #fff; }
+  .price div span { color: var(--soft); font-size: 15.5px; }
+
+  .support { text-align: center; }
+  .support .mail { display: inline-block; margin-top: 6px; font-size: clamp(18px, 3.4vw, 26px); font-weight: 900; color: var(--gold); text-decoration: none; word-break: break-word; }
+  .support p { color: var(--soft); max-width: 34em; margin: 12px auto 0; }
+
+  footer { border-top: 2px solid var(--night-hi); padding: 26px 0 40px; color: var(--soft); font-size: 14.5px; display: flex; flex-wrap: wrap; gap: 8px 22px; justify-content: space-between; }
+  footer a { color: var(--soft); }
+  @media (max-width: 520px) { nav a.hide-s { display: none; } section { padding: 34px 0; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand pixel" href="./"><img src="img/icon-180.png" alt="" width="36" height="36">The Corporation</a>
+    <nav>
+      <a class="hide-s" href="#game">The game</a>
+      <a href="#support">Support</a>
+      <a href="store/privacy-policy.html">Privacy</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h1 class="pixel">The Corporation</h1>
+    <p class="tag">Balance out your career and life.</p>
+    <p class="sub">Six months' probation in an open-plan office, one day at a time. Two answers a day. Neither is the right one.</p>
+    <div class="cta">
+      <a class="btn gold" href="play/">Play in your browser</a>
+      <a class="btn teal" href="#game">See what happens</a>
+    </div>
+    <p class="stores">Coming to iPhone and Android.</p>
+  </div>
+</div>
+
+<div class="shots" aria-label="Screenshots">
+  <img src="img/1-choice.webp" width="560" height="1212" alt="Two answers. Neither is right. A situation card with two choices.">
+  <img src="img/2-bluepen.webp" width="560" height="1212" loading="lazy" alt="Is that a blue pen? Day one, someone is fired over it.">
+  <img src="img/3-evening.webp" width="560" height="1212" loading="lazy" alt="The evening is yours: friends, dates, something of your own.">
+  <img src="img/4-review.webp" width="560" height="1212" loading="lazy" alt="Five stars. No raise. The monthly performance review.">
+  <img src="img/5-nightreport.webp" width="560" height="1212" loading="lazy" alt="The day keeps score: the night report.">
+  <img src="img/6-achievements.webp" width="560" height="1212" loading="lazy" alt="Thirteen achievements.">
+  <img src="img/7-title.webp" width="560" height="1212" loading="lazy" alt="Survive your probation: the title screen.">
+</div>
+
+<div class="wrap">
+  <section id="game">
+    <h2 class="pixel">You are the Junior now.<br>The chair is still warm.</h2>
+    <p class="lede">Each morning somebody walks over to your desk — your manager, Marta from the team that keeps shipping your work, HR with a face you learn to read — and puts a situation in front of you. You get two ways to answer it.</p>
+    <p class="lede">Say yes to everything and your body goes first. Coast and the reviews notice, then HR notices, then a file exists with your name on the tab. The office is keeping score in ways it will never show you.</p>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="cards">
+      <div class="card">
+        <h3 class="pixel">What you actually do</h3>
+        <ul>
+          <li>Answer one situation a day, from over a hundred, drawn to fit where your career is.</li>
+          <li>Spend the evening on a date, on friends, on something of your own, or on your phone.</li>
+          <li>Watch five meters you can read and several you cannot.</li>
+          <li>Sit your Friday one-on-one and take the grade.</li>
+          <li>Take the job at the other company, or tear the letter up.</li>
+        </ul>
+      </div>
+      <div class="card office">
+        <h3 class="pixel">What the office does</h3>
+        <ul>
+          <li>HR opens a file, writes it up, and closes it again — and tells you, every time.</li>
+          <li>Your manager decides whether you exist this quarter.</li>
+          <li>A reorg arrives. Your salary drifts. Your project goes to somebody else.</li>
+          <li>A firing is never a surprise: the warning comes first.</li>
+          <li>Afterwards the game tells you exactly which part of the score did it.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="price">
+      <div><strong>First four weeks free</strong><span>The other twenty-two are one purchase, once.</span></div>
+      <div><strong>Nothing else for sale</strong><span>No ads, no subscriptions, no coins, no timers.</span></div>
+      <div><strong>No account, no tracking</strong><span>Your run is saved on your device. The game collects nothing.</span></div>
+      <div><strong>Plays offline</strong><span>A new daily office every day, the same run for everyone.</span></div>
+    </div>
+  </section>
+
+  <section id="support" class="support">
+    <h2 class="pixel">Support</h2>
+    <a class="mail" href="mailto:support@playthecorporation.app">support@playthecorporation.app</a>
+    <p>Questions, bugs, a purchase that did not restore, or a firing you would like to contest — write here. A person reads it.</p>
+  </section>
+
+  <footer>
+    <span>© 2026 DDA Projects · Art by LimeZu</span>
+    <span><a href="store/privacy-policy.html">Privacy policy</a> · <a href="mailto:support@playthecorporation.app">Contact</a></span>
+  </footer>
+</div>
+<script>
+  // Shared end cards link to the site root with a run seed (#office-YYYY-MM-DD or a 6-char code);
+  // the game lives in play/, so hand the seed over. Page anchors (#support, #game) stay here.
+  (function () {
+    var h = location.hash.slice(1);
+    if (h && !document.getElementById(h)) location.replace('play/' + location.hash);
+  })();
+</script>
+</body>
 </html>
